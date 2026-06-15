@@ -1,0 +1,61 @@
+@{
+    ViewData["Title"] = "Sipariş Onayı";
+    Layout = "~/Views/UILayout/_UILayout.cshtml";
+
+    var paymentId = TempData["PaymentResultId"]?.ToString();
+    var amount = TempData["PaymentAmount"]?.ToString();
+    var last4 = TempData["PaymentLast4"]?.ToString();
+    var orderWarning = TempData["PaymentOrderWarning"]?.ToString();
+
+    if (string.IsNullOrEmpty(paymentId))
+    {
+        // Direkt URL ile gelinmis olabilir; sepete yonlendirelim.
+    }
+}
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 my-5">
+            <div class="bg-light p-5 text-center rounded shadow-sm">
+                <div class="mb-3" style="font-size:64px; color:#2e7d32;">
+                    <i class="fa fa-check-circle"></i>
+                </div>
+                <h2 class="mb-2">Siparişin başarıyla alındı!</h2>
+                <p class="text-muted">
+                    Ödemen <strong>MultiShopPaymentDb</strong>'ye kaydedildi. Sepetin temizlendi.
+                </p>
+                @if (!string.IsNullOrWhiteSpace(orderWarning))
+                {
+                    <div class="alert alert-warning mt-3">@orderWarning</div>
+                }
+
+                @if (!string.IsNullOrEmpty(paymentId))
+                {
+                    <div class="d-inline-block bg-white p-4 mt-3 rounded text-left" style="min-width:320px;">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">Sipariş No:</span>
+                            <strong>#@paymentId</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">Tutar:</span>
+                            <strong>@amount ₺</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span class="text-muted">Kart:</span>
+                            <strong>**** **** **** @last4</strong>
+                        </div>
+                    </div>
+                }
+
+                <div class="mt-4">
+                    <a href="/Default/Index/" class="btn btn-primary mr-2">
+                        <i class="fa fa-home mr-1"></i> Ana Sayfaya Dön
+                    </a>
+                    <a href="/ProductList/Index/" class="btn btn-outline-secondary">
+                        Alışverişe Devam Et
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

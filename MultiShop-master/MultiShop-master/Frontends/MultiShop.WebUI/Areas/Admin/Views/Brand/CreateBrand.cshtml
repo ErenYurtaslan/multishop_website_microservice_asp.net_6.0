@@ -1,0 +1,37 @@
+﻿@model CreateBrandDto
+
+@{
+    ViewData["Title"] = "CreateBrand";
+    Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
+}
+
+
+<section class="content container-fluid">
+    <div class="row">
+
+        <div class="col-md-12">
+            <div class="chart-box">
+                <h4>Marka Ekleme Sayfası</h4>
+                <br />
+                <div class="bs-example" data-example-id="bordered-table">
+
+                    <form method="post" enctype="multipart/form-data">
+                        @Html.AntiForgeryToken()
+                        <label>Marka Adı</label>
+                        <input type="text" class="form-control" asp-for="BrandName" />
+                        <br />
+                        <label>Marka Görseli (Dosya Yükle)</label>
+                        <input type="file" class="form-control" name="imageFile" accept=".jpg,.jpeg,.png,.webp,.gif,.svg" />
+                        <small class="text-muted">Yüklersen görsel yolu otomatik kaydedilir.</small>
+                        <br />
+                        <label>Marka Görsel URL (Opsiyonel)</label>
+                        <input type="text" class="form-control" asp-for="ImageUrl" placeholder="/images/brands/ornek.png veya https://..." />
+                        <br />
+                        <button class="btn btn-primary">Markayı Ekle</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+

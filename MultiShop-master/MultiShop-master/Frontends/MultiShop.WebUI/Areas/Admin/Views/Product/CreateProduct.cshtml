@@ -1,0 +1,73 @@
+﻿@model CreateProductDto
+
+@{
+    ViewData["Title"] = "CreateProduct";
+    Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
+}
+
+<section class="content container-fluid">
+    <div class="row">
+
+        <div class="col-md-12">
+            <div class="chart-box">
+                <h4>Ürün Ekleme Sayfası</h4>
+                <br />
+                <div class="bs-example" data-example-id="bordered-table">
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            @foreach (var err in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                            {
+                                <div>@err.ErrorMessage</div>
+                            }
+                        </div>
+                    }
+
+                    <form method="post" enctype="multipart/form-data">
+                        @Html.AntiForgeryToken()
+                        <label>Ürün Adı</label>
+                        <input type="text" class="form-control" asp-for="ProductName" required />
+                        <br />
+                        <label>Ürün Fiyatı</label>
+                        <input type="number" step="0.01" min="0" class="form-control" asp-for="ProductPrice" required />
+                        <br />
+                        <label>Ürün Görseli</label>
+                        <input type="file" class="form-control" name="productImageFile" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" />
+                        <small class="text-muted">Dosya seçersen görsel yüklenir. Seçmezsen aşağıdan URL girebilirsin.</small>
+                        <br />
+                        <label>Ürün Görsel URL (opsiyonel)</label>
+                        <input type="text" class="form-control" asp-for="ProductImageUrl" placeholder="/images/products/ornek.png veya https://..." />
+                        <br />
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label>Renk</label>
+                                <input type="text" class="form-control" asp-for="Color" placeholder="Siyah, Beyaz, Kırmızı..." />
+                                <small class="text-muted d-block mt-1">Filtre ikon rengi</small>
+                                <input type="color" class="form-control" asp-for="ColorCode" value="@(string.IsNullOrWhiteSpace(Model?.ColorCode) ? "#cccccc" : Model.ColorCode)" />
+                            </div>
+                            <div class="col-md-4">
+                                <label>Beden / Ebat</label>
+                                <input type="text" class="form-control" asp-for="Size" placeholder="XS, S, M, L, XL..." />
+                            </div>
+                            <div class="col-md-4">
+                                <label>Stok Adedi</label>
+                                <input type="number" min="0" class="form-control" asp-for="Stock" />
+                            </div>
+                        </div>
+                        <br />
+                        <label>Ürün Kategorisi</label>
+                        @Html.DropDownListFor(x=>x.CategoryId,(List<SelectListItem>)ViewBag.CategoryValues,new {@class="form-control"})
+                        <br />
+                        <label>Ürün Markası</label>
+                        @Html.DropDownListFor(x => x.BrandId, (List<SelectListItem>)ViewBag.BrandValues, "Marka seçiniz", new { @class = "form-control" })
+                        <br />
+                        <label>Ürün Açıklaması</label>
+                        <textarea class="form-control" asp-for="ProductDescription" rows="5"></textarea>
+                        <br />
+                        <button class="btn btn-primary">Ürünü Ekle</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

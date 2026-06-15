@@ -1,0 +1,50 @@
+@model UserDetailViewModel
+
+@{
+    ViewData["Title"] = "Profilim";
+    Layout = "~/Views/UILayout/_UILayout.cshtml";
+}
+<div class="container-fluid">
+    <div class="row px-xl-5">
+        <div class="col-12">
+            <nav class="breadcrumb bg-light mb-30">
+                <a class="breadcrumb-item text-dark" href="/">Ana Sayfa</a>
+                <span class="breadcrumb-item active">Profilim</span>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid pb-5">
+    <div class="row px-xl-5">
+        <div class="col-lg-8">
+            <div class="bg-light p-30 mb-4">
+                <h4 class="mb-4">Kullanıcı Profil Bilgisi</h4>
+                <div class="mb-3 p-3 border rounded bg-white">
+                    <small class="text-muted d-block">Kullanıcı Kimliği</small>
+                    <strong>@Model.Id</strong>
+                </div>
+                <div class="mb-3 p-3 border rounded bg-white">
+                    <small class="text-muted d-block">Kullanıcı Adı</small>
+                    <strong>@Model.Username</strong>
+                </div>
+                <div class="mb-3 p-3 border rounded bg-white">
+                    <small class="text-muted d-block">Ad Soyad</small>
+                    <strong>@Model.Name @Model.Surname</strong>
+                </div>
+                <div class="p-3 border rounded bg-white">
+                    <small class="text-muted d-block">E-posta</small>
+                    <strong>@Model.Email</strong>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="bg-light p-30 mb-4">
+                <h5 class="mb-3">Hızlı İşlemler</h5>
+                <a class="btn btn-outline-primary btn-block mb-2" href="/Favorite/Index/">Favorilerim</a>
+                <a class="btn btn-outline-primary btn-block mb-2" href="/ShoppingCart/Index/">Sepetim</a>
+                <a class="btn btn-outline-primary btn-block" href="/Order/Index/">Ödeme Bilgileri</a>
+            </div>
+        </div>
+    </div>
+</div>

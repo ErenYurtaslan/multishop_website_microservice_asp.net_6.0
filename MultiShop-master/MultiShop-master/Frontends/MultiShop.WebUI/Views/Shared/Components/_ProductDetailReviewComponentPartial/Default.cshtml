@@ -1,0 +1,30 @@
+﻿@model List<ResultCommentDto>
+@functions {
+    string StarClass(int index, int rating) => index <= rating ? "fas fa-star" : "far fa-star";
+}
+
+<div>
+    <div class="row">
+        <div class="col-lg-7">
+            <h5 class="mb-3">@Model.Count yorum bulunmaktadır</h5>
+            @foreach(var item in Model)
+            {
+                <div class="media mb-3 p-3 bg-white border rounded">
+                    <img src="@item.ImageUrl" alt="Image" class="img-fluid mr-3 mt-1 rounded-circle" style="width: 40px;height:40px;object-fit:cover;" onerror="this.onerror=null;this.src='/images/placeholder-product.svg';">
+                    <div class="media-body">
+                        <h6 class="mb-1">@item.NameSurname <small class="text-muted">- <i>@item.CreatedDate.ToShortDateString()</i></small></h6>
+                        <div class="text-primary mb-1">
+                            @for (var i = 1; i <= 5; i++)
+                            {
+                                <i class="@StarClass(i, item.Rating)"></i>
+                            }
+                        </div>
+                        <p class="mb-0 text-muted">@item.CommentDetail</p>
+                    </div>
+                </div>
+            }
+            
+        </div>
+        @await Html.PartialAsync("~/Views/ProductList/AddComment.cshtml",new {id=ViewBag.x})
+    </div>
+</div>

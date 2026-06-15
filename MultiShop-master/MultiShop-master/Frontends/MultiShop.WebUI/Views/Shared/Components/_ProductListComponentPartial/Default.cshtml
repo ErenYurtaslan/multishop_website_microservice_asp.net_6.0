@@ -1,0 +1,123 @@
+@model List<ResultProductWithCategoryDto>
+@{
+    var returnEnc = Uri.EscapeDataString(Context.Request.Path + Context.Request.QueryString);
+    string ListImgUrl(ResultProductWithCategoryDto i) => string.IsNullOrWhiteSpace(i?.ProductImageUrl) ? "/images/placeholder-product.svg" : i.ProductImageUrl;
+    var brandLookup = ViewBag.BrandLookup as Dictionary<string, MultiShop.DtoLayer.CatalogDtos.BrandDtos.ResultBrandDto>
+                      ?? new Dictionary<string, MultiShop.DtoLayer.CatalogDtos.BrandDtos.ResultBrandDto>();
+    var ratingLookup = ViewBag.RatingSummaryByProductId as Dictionary<string, MultiShop.WebUI.ViewComponents.ProductListViewComponents._ProductListComponentPartial.ProductRatingSummary>
+                      ?? new Dictionary<string, MultiShop.WebUI.ViewComponents.ProductListViewComponents._ProductListComponentPartial.ProductRatingSummary>();
+}
+
+@if (Model == null || Model.Count == 0)
+{
+    <div class="col-12">
+        <div class="alert alert-info">
+            Seçilen filtrelere uygun ürün bulunamadı.
+        </div>
+    </div>
+}
+else
+{
+    foreach (var item in Model)
+    {
+        decimal x = ((item.ProductPrice / 100) * 15) + item.ProductPrice;
+        var outOfStock = item.Stock <= 0;
+        brandLookup.TryGetValue(item.BrandId ?? string.Empty, out var brand);
+        ratingLookup.TryGetValue(item.ProductId ?? string.Empty, out var ratingSummary);
+        var reviewCount = ratingSummary?.ReviewCount ?? 0;
+        var averageRating = ratingSummary?.AverageRating ?? 0d;
+        var averageRatingText = averageRating.ToString("0.0");
+        var roundedToHalf = Math.Round(averageRating * 2, MidpointRounding.AwayFromZero) / 2.0;
+        var fullStarCount = (int)Math.Floor(roundedToHalf);
+        var hasHalfStar = (roundedToHalf - fullStarCount) >= 0.5;
+        var emptyStarCount = 5 - fullStarCount - (hasHalfStar ? 1 : 0);
+        if (emptyStarCount < 0) { emptyStarCount = 0; }
+        <div class="col-lg-4 col-md-6 col-sm-6 pb-1">
+            <div class="product-item bg-light mb-4">
+                <div class="product-img position-relative overflow-hidden">
+                    <img class="img-fluid w-100" src="@ListImgUrl(item)" alt="@item.ProductName" onerror="this.onerror=null;this.src='/images/placeholder-product.svg';">
+                    @if (outOfStock)
+                    {
+                        <span class="badge badge-danger position-absolute" style="top:10px;left:10px;">Stok yok</span>
+                    }
+                    <div class="product-action">
+                        @if (outOfStock)
+                        {
+                            <span class="btn btn-outline-secondary btn-square" title="Stok yok"><i class="fa fa-shopping-cart"></i></span>
+                        }
+                        else
+                        {
+                            <a class="btn btn-outline-dark btn-square" href="/ShoppingCart/AddBasketItem/@item.ProductId?returnUrl=@returnEnc" title="Sepete ekle"><i class="fa fa-shopping-cart"></i></a>
+                        }
+                        <a class="btn btn-outline-dark btn-square" href="/Favorite/Add/@item.ProductId?returnUrl=@returnEnc" title="Favorilere ekle"><i class="far fa-heart"></i></a>
+                        <a class="btn btn-outline-dark btn-square" href="/ProductList/ProductDetail/@item.ProductId" title="Detayı incele"><i class="fa fa-sync-alt"></i></a>
+                        <a class="btn btn-outline-dark btn-square" href="/ProductList/ProductDetail/@item.ProductId" title="Detay görünümü"><i class="fa fa-search"></i></a>
+                    </div>
+                </div>
+                <div class="text-center py-4">
+                    <a class="h6 text-decoration-none text-truncate" href="/ProductList/ProductDetail/@item.ProductId">@item.ProductName</a>
+                    <div class="d-flex align-items-center justify-content-center mt-2">
+                        <h5>@item.ProductPrice ₺</h5><h6 class="text-muted ml-2"><del>@x ₺</del></h6>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-center mb-1">
+                        @if (brand != null)
+                        {
+                            <small class="text-muted mr-2 d-inline-flex align-items-center">
+                                <img src="@brand.ImageUrl" alt="@brand.BrandName" style="width:16px;height:16px;object-fit:contain;margin-right:4px;" onerror="this.onerror=null;this.src='/images/placeholder-product.svg';" />
+                                @brand.BrandName
+                            </small>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(item.Color))
+                        {
+                            <small class="text-muted mr-2">@item.Color</small>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(item.Size))
+                        {
+                            <small class="text-muted">@item.Size</small>
+                        }
+                    </div>
+                    <div class="d-flex align-items-center justify-content-center mb-0">
+                        @if (reviewCount > 0)
+                        {
+                            <small class="text-muted mr-2">@averageRatingText</small>
+                        }
+                        <div class="text-primary mr-2">
+                            @if (reviewCount > 0)
+                            {
+                                @for (var i = 0; i < fullStarCount; i++)
+                                {
+                                    <small class="fas fa-star"></small>
+                                }
+                                @if (hasHalfStar)
+                                {
+                                    <small class="fas fa-star-half-alt"></small>
+                                }
+                                @for (var i = 0; i < emptyStarCount; i++)
+                                {
+                                    <small class="far fa-star"></small>
+                                }
+                            }
+                            else
+                            {
+                                @for (var i = 0; i < 5; i++)
+                                {
+                                    <small class="far fa-star"></small>
+                                }
+                            }
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-center mb-1">
+                        @if (reviewCount > 0)
+                        {
+                            <small>(@reviewCount değerlendirme)</small>
+                        }
+                        else
+                        {
+                            <small>(henüz değerlendirilmemiş)</small>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}

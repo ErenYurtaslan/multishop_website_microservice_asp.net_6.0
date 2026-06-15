@@ -1,0 +1,27 @@
+﻿@{
+    var minPrice = ViewBag.MinPrice as decimal?;
+    var maxPrice = ViewBag.MaxPrice as decimal?;
+    var inStockOnly = (bool)(ViewBag.InStockOnly ?? false);
+    string Fmt(decimal? v) => v.HasValue ? v.Value.ToString(System.Globalization.CultureInfo.InvariantCulture) : string.Empty;
+}
+
+<h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Fiyata Göre Filtrele</span></h5>
+<div class="bg-light p-4 mb-30">
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="minPrice" class="small text-uppercase">Min ₺</label>
+            <input form="productFilterForm" type="number" min="0" step="0.01" class="form-control form-control-sm"
+                   id="minPrice" name="minPrice" value="@Fmt(minPrice)" placeholder="0" />
+        </div>
+        <div class="form-group col-md-6">
+            <label for="maxPrice" class="small text-uppercase">Max ₺</label>
+            <input form="productFilterForm" type="number" min="0" step="0.01" class="form-control form-control-sm"
+                   id="maxPrice" name="maxPrice" value="@Fmt(maxPrice)" placeholder="∞" />
+        </div>
+    </div>
+    <div class="custom-control custom-checkbox mt-2">
+        <input form="productFilterForm" type="checkbox" class="custom-control-input" id="inStockOnly" name="inStockOnly" value="true"
+               @(inStockOnly ? "checked" : "") />
+        <label class="custom-control-label" for="inStockOnly">Sadece stokta olanlar</label>
+    </div>
+</div>

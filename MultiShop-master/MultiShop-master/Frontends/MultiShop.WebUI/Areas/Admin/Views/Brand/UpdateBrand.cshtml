@@ -1,0 +1,40 @@
+﻿@model UpdateBrandDto
+
+@{
+    ViewData["Title"] = "UpdateBrand";
+    Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
+}
+
+
+
+<section class="content container-fluid">
+    <div class="row">
+
+        <div class="col-md-12">
+            <div class="chart-box">
+                <h4>Marka Güncelleme Sayfası</h4>
+                <br />
+                <div class="bs-example" data-example-id="bordered-table">
+
+                    <form method="post" enctype="multipart/form-data">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="BrandId" />
+                        <label>Marka Adı</label>
+                        <input type="text" class="form-control" asp-for="BrandName" />
+                        <br />
+                        <label>Mevcut Görsel URL</label>
+                        <input type="text" class="form-control" asp-for="ImageUrl" />
+                        <br />
+                        <label>Yeni Görsel Yükle (Opsiyonel)</label>
+                        <input type="file" class="form-control" name="imageFile" accept=".jpg,.jpeg,.png,.webp,.gif,.svg" />
+                        <small class="text-muted">Dosya seçersen mevcut URL yerine yeni yüklenen dosya yolu kaydedilir.</small>
+                        <br />
+                        <button class="btn btn-success">Markayı Güncelle</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+

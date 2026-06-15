@@ -1,0 +1,129 @@
+@{
+    ViewData["Title"] = "Ödeme";
+    Layout = "~/Views/UILayout/_UILayout.cshtml";
+
+    var items = ViewBag.basketItems as List<MultiShop.DtoLayer.BasketDtos.BasketItemDto>
+                ?? new List<MultiShop.DtoLayer.BasketDtos.BasketItemDto>();
+    var subTotal = ViewBag.subTotal is decimal s ? s : 0m;
+    var tax = ViewBag.tax is decimal t ? t : 0m;
+    var grand = ViewBag.grandTotal is decimal g ? g : 0m;
+    var itemCount = ViewBag.itemCount is int n ? n : 0;
+    var brandByProductId = ViewBag.BrandByProductId as Dictionary<string, MultiShop.DtoLayer.CatalogDtos.BrandDtos.ResultBrandDto>;
+}
+
+<div class="container-fluid">
+    <div class="row px-xl-5">
+        <div class="col-lg-7 mb-5">
+            <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Kart Bilgileri</span></h5>
+            <div class="bg-light p-4 mb-4">
+
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="alert alert-warning py-2 px-3 mb-3" style="font-size: 0.9rem;">
+                        @foreach (var err in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                        {
+                            <div>@err.ErrorMessage</div>
+                        }
+                    </div>
+                }
+
+                <form asp-controller="Payment" asp-action="Process" method="post" id="ms-payment-form">
+                    @Html.AntiForgeryToken()
+                    <div class="form-group">
+                        <label>Kart Numarası</label>
+                        <input type="text" name="cardNumber" maxlength="19" autocomplete="off"
+                               class="form-control" placeholder="•••• •••• •••• ••••" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Kart Sahibi</label>
+                        <input type="text" name="cardHolder" maxlength="60" autocomplete="off"
+                               class="form-control" placeholder="Ad Soyad" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 form-group">
+                            <label>Ay</label>
+                            <select name="expMonth" class="form-control" required>
+                                <option value="">Ay</option>
+                                @for (int m = 1; m <= 12; m++)
+                                {
+                                    <option value="@m.ToString("D2")">@m.ToString("D2")</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-4 form-group">
+                            <label>Yıl</label>
+                            <select name="expYear" class="form-control" required>
+                                <option value="">Yıl</option>
+                                @for (int y = DateTime.Now.Year; y < DateTime.Now.Year + 8; y++)
+                                {
+                                    <option value="@y">@y</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-4 form-group">
+                            <label>CVV</label>
+                            <input type="text" name="cvv" maxlength="4" autocomplete="off"
+                                   class="form-control" placeholder="123" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block py-3 font-weight-bold">
+                        <i class="fa fa-lock mr-2"></i> Ödemeyi Tamamla — @grand ₺
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-lg-5 mb-5">
+            <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Sipariş Özeti</span></h5>
+            <div class="bg-light p-4 mb-4">
+                @foreach (var item in items)
+                {
+                    var line = item.Price * item.Quantity;
+                    var brand = item.ProductId != null && brandByProductId != null && brandByProductId.TryGetValue(item.ProductId, out var b) ? b : null;
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-truncate mr-2" style="max-width:60%;">
+                            @if (brand != null)
+                            {
+                                <img src="@brand.ImageUrl" alt="@brand.BrandName" style="width:14px;height:14px;object-fit:contain;margin-right:4px;" onerror="this.onerror=null;this.src='/images/placeholder-product.svg';" />
+                            }
+                            @item.ProductName <small class="text-muted">x@item.Quantity</small>
+                        </span>
+                        <span><strong>@line ₺</strong></span>
+                    </div>
+                }
+                <hr>
+                <div class="d-flex justify-content-between mb-1">
+                    <span>Ara Toplam (@itemCount adet)</span>
+                    <span>@subTotal ₺</span>
+                </div>
+                <div class="d-flex justify-content-between mb-1">
+                    <span>KDV (%10)</span>
+                    <span>@tax ₺</span>
+                </div>
+                <div class="d-flex justify-content-between mt-3">
+                    <h5 class="font-weight-bold mb-0">Genel Toplam</h5>
+                    <h5 class="font-weight-bold mb-0">@grand ₺</h5>
+                </div>
+            </div>
+
+            <a href="/ShoppingCart/Index/" class="btn btn-outline-secondary btn-block">
+                <i class="fa fa-arrow-left mr-1"></i> Sepete Dön
+            </a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            var input = document.querySelector('input[name="cardNumber"]');
+            if (!input) return;
+            input.addEventListener('input', function () {
+                var v = input.value.replace(/\D/g, '').slice(0, 16);
+                var groups = v.match(/.{1,4}/g);
+                input.value = groups ? groups.join(' ') : '';
+            });
+        })();
+    </script>
+}

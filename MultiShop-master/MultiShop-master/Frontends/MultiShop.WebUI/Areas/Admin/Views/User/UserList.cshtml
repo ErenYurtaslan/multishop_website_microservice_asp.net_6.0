@@ -1,0 +1,56 @@
+﻿@model List<ResultUserDto>
+
+@{
+    ViewData["Title"] = "UserList";
+    Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
+    int count = 0;
+}
+
+<section class="content container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="chart-box">
+                <div class="bs-example" data-example-id="bordered-table">
+                    @if (TempData["AdminUserError"] is string adminUserError && !string.IsNullOrWhiteSpace(adminUserError))
+                    {
+                        <div class="alert alert-warning">@adminUserError</div>
+                    }
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Ad Soyad</th>
+                                <th>Kullanıcı Adı</th>
+                                <th>Email</th>
+                                <th>Adres Detayı</th>
+                                <th>Şifre</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                count++;
+                                <tr>
+                                    <th scope="row">@count</th>
+                                    <td>@item.name</td>
+                                    <td>@item.userName</td>
+                                    <td>@item.email</td>     
+                                    <td>
+                                        <a asp-area="Admin" asp-controller="User" asp-action="UserAddressInfo" asp-route-id="@item.id" asp-route-email="@item.email" class="btn btn-warning">Adres Detayı</a>
+                                    </td>
+                                    <td>
+                                        <form asp-area="Admin" asp-controller="User" asp-action="ResetUserPassword" method="post" style="display:inline;">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@item.id" />
+                                            <button type="submit" class="btn btn-danger btn-sm">Şifre Sıfırla</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

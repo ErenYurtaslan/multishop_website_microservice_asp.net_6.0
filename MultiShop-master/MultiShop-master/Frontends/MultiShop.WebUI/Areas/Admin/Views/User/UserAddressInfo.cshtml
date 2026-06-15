@@ -1,0 +1,35 @@
+﻿@model List<MultiShop.DtoLayer.OrderDtos.OrderAddressDtos.ResultOrderAddressByEmailDto>
+@{
+    ViewData["Title"] = "UserAddressInfo";
+    Layout = "~/Areas/Admin/Views/AdminLayout/Index.cshtml";
+}
+
+<section class="content container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="chart-box">
+                <div class="bs-example" data-example-id="bordered-table">
+                    <h3>Kullanıcı Sipariş Adresleri</h3>
+                    <div class="alert alert-info">
+                        Email: @(ViewBag.AddressInfoEmail ?? "-") | Farklı Adres Sayısı: @(Model?.Count ?? 0)
+                    </div>
+
+                    @foreach (var address in Model ?? new List<MultiShop.DtoLayer.OrderDtos.OrderAddressDtos.ResultOrderAddressByEmailDto>())
+                    {
+                        <div class="panel panel-default" style="border:1px solid #eee; margin-bottom:12px;">
+                            <div class="panel-body">
+                                <div><strong>Ad Soyad:</strong> @address.Name @address.Surname</div>
+                                <div><strong>Telefon:</strong> @address.Phone</div>
+                                <div><strong>Ülke/İl/İlçe:</strong> @address.Country / @address.City / @address.District</div>
+                                <div><strong>Adres 1:</strong> @address.Detail1</div>
+                                <div><strong>Adres 2:</strong> @address.Detail2</div>
+                                <div><strong>Posta Kodu:</strong> @address.ZipCode</div>
+                                <div><strong>Açıklama:</strong> @address.Description</div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

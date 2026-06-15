@@ -1,0 +1,211 @@
+@model UpdateProductDto
+@{
+    var outOfStock = Model == null || Model.Stock <= 0;
+    var maxQty = Math.Max(1, Model?.Stock ?? 1);
+    var maxQtyInvariant = maxQty.ToString(global::System.Globalization.CultureInfo.InvariantCulture);
+    var qtyWidgetId = $"qty-widget-{Model?.ProductId}";
+    var addReturnUrl = Uri.EscapeDataString(Context.Request.Path + Context.Request.QueryString);
+    var reviewCount = ViewBag.ReviewCount is int rc ? rc : 0;
+    var averageRating = ViewBag.AverageRating is double ar ? ar : 0d;
+    var roundedToHalf = Math.Round(averageRating * 2, MidpointRounding.AwayFromZero) / 2.0;
+    var fullStarCount = (int)Math.Floor(roundedToHalf);
+    var hasHalfStar = (roundedToHalf - fullStarCount) >= 0.5;
+    var emptyStarCount = 5 - fullStarCount - (hasHalfStar ? 1 : 0);
+    if (emptyStarCount < 0) { emptyStarCount = 0; }
+}
+<div class="col-lg-7 h-auto mb-30">
+    <div class="h-100 bg-light p-30">
+        @if (!string.IsNullOrWhiteSpace(ViewBag.BrandName as string))
+        {
+            <div class="mb-2 d-flex align-items-center">
+                <img src="@(ViewBag.BrandLogo ?? "/images/placeholder-product.svg")" alt="@ViewBag.BrandName" style="width:24px;height:24px;object-fit:contain;margin-right:8px;" onerror="this.onerror=null;this.src='/images/placeholder-product.svg';" />
+                <small class="text-muted">Marka: <strong>@ViewBag.BrandName</strong></small>
+            </div>
+        }
+        <h3>
+            @Model.ProductName
+            @if (outOfStock)
+            {
+                <span class="badge badge-danger align-middle" style="font-size:0.6em;">Stok yok</span>
+            }
+        </h3>
+        <p class="text-muted small mb-2">
+            Stok: <strong>@(Model?.Stock ?? 0)</strong> adet
+            @if (!string.IsNullOrWhiteSpace(Model?.Size))
+            {
+                <span class="ml-2">Ebat: <strong>@Model.Size</strong></span>
+            }
+            @if (!string.IsNullOrWhiteSpace(Model?.Color))
+            {
+                <span class="ml-2">Renk: <strong>@Model.Color</strong></span>
+            }
+        </p>
+        <div class="d-flex mb-3">
+            <div class="text-primary mr-2">
+                @if (reviewCount > 0)
+                {
+                    @for (var i = 0; i < fullStarCount; i++)
+                    {
+                        <small class="fas fa-star"></small>
+                    }
+                    @if (hasHalfStar)
+                    {
+                        <small class="fas fa-star-half-alt"></small>
+                    }
+                    @for (var i = 0; i < emptyStarCount; i++)
+                    {
+                        <small class="far fa-star"></small>
+                    }
+                }
+                else
+                {
+                    @for (var i = 0; i < 5; i++)
+                    {
+                        <small class="far fa-star"></small>
+                    }
+                }
+            </div>
+            @if (reviewCount > 0)
+            {
+                <small class="pt-1">(@reviewCount değerlendirme)</small>
+            }
+            else
+            {
+                <small class="pt-1">(henüz değerlendirilmemiş)</small>
+            }
+        </div>
+        <h3 class="font-weight-semi-bold mb-4">₺ @Model.ProductPrice</h3>
+        <p class="mb-4">
+            @Model.ProductDescription
+        </p>
+
+        <div class="mb-4">
+            <small class="text-muted d-block mb-2">Ürün özellikleri</small>
+            <div class="d-flex align-items-center flex-wrap" style="gap:8px;">
+                @if (!string.IsNullOrWhiteSpace(Model?.Size))
+                {
+                    <span class="badge badge-light" style="padding:8px 12px;">Ebat: @Model.Size</span>
+                }
+                @if (!string.IsNullOrWhiteSpace(Model?.Color))
+                {
+                    <span class="badge badge-light d-inline-flex align-items-center" style="padding:8px 12px;">
+                        @if (!string.IsNullOrWhiteSpace(Model?.ColorCode))
+                        {
+                            <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:@Model.ColorCode;border:1px solid #ddd;margin-right:6px;"></span>
+                        }
+                        Renk: @Model.Color
+                    </span>
+                }
+                @if (string.IsNullOrWhiteSpace(Model?.Size) && string.IsNullOrWhiteSpace(Model?.Color))
+                {
+                    <span class="text-muted">Bu ürün için ek varyasyon bilgisi girilmemiş.</span>
+                }
+            </div>
+        </div>
+
+        <form id="@qtyWidgetId" class="d-flex align-items-center flex-wrap mb-4 pt-2" method="get" action="/ShoppingCart/AddBasketItem/@Model.ProductId" data-max-stock="@maxQtyInvariant">
+            <input type="hidden" name="returnUrl" value="@addReturnUrl" />
+            <div class="input-group mr-3 js-detail-qty-group" style="width: 130px;">
+                <div class="input-group-btn">
+                    <button class="btn btn-primary js-detail-qty-minus" type="button" aria-label="Azalt">
+                        <i class="fa fa-minus"></i>
+                    </button>
+                </div>
+                <input type="text" class="form-control bg-secondary border-0 text-center js-detail-qty-input" name="quantity" value="1" readonly>
+                <div class="input-group-btn">
+                    <button class="btn btn-primary js-detail-qty-plus" type="button" aria-label="Arttir">
+                        <i class="fa fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+            @if (outOfStock)
+            {
+                <span class="btn btn-secondary px-3 disabled" style="pointer-events: none; opacity: 0.7;">
+                    <i class="fa fa-shopping-cart mr-1"></i> Stokta yok
+                </span>
+            }
+            else
+            {
+                <button type="submit" class="btn btn-primary px-3">
+                    <i class="fa fa-shopping-cart mr-1"></i> Sepete Ekle
+                </button>
+            }
+        </form>
+        @if (!outOfStock)
+        {
+            <small class="text-warning mb-3 js-max-stock-info" style="display:none;">
+                Maksimum stok adedine ulaşıldı.
+            </small>
+        }
+
+        <div class="d-flex pt-2">
+            <strong class="text-dark mr-2">Paylaş:</strong>
+            <div class="d-inline-flex">
+                <a class="text-dark px-2" href="javascript:void(0)">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+                <a class="text-dark px-2" href="javascript:void(0)">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                <a class="text-dark px-2" href="javascript:void(0)">
+                    <i class="fab fa-linkedin-in"></i>
+                </a>
+                <a class="text-dark px-2" href="javascript:void(0)">
+                    <i class="fab fa-pinterest"></i>
+                </a>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script>
+    (function () {
+        var form = document.getElementById('@qtyWidgetId');
+        if (!form) return;
+
+        var qtyInput = form.querySelector('.js-detail-qty-input');
+        var minusBtn = form.querySelector('.js-detail-qty-minus');
+        var plusBtn = form.querySelector('.js-detail-qty-plus');
+        var maxInfo = form.parentElement && form.parentElement.querySelector('.js-max-stock-info');
+        if (!qtyInput || !minusBtn || !plusBtn) return;
+
+        var rawMaxStock = form.getAttribute('data-max-stock') || '1';
+        rawMaxStock = rawMaxStock.replace(',', '.');
+        var maxStock = Math.floor(Number(rawMaxStock));
+        if (!maxStock || maxStock < 1) maxStock = 1;
+        var outOfStock = @(outOfStock ? "true" : "false");
+
+        function setQty(nextQty) {
+            var qty = nextQty;
+            if (qty < 1) qty = 1;
+            if (qty > maxStock) qty = maxStock;
+
+            qtyInput.value = String(qty);
+            minusBtn.disabled = outOfStock || qty <= 1;
+            plusBtn.disabled = outOfStock || qty >= maxStock;
+            if (maxInfo) {
+                maxInfo.style.display = qty >= maxStock ? 'block' : 'none';
+            }
+        }
+
+        minusBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            setQty(parseInt(qtyInput.value || '1', 10) - 1);
+        });
+
+        plusBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            setQty(parseInt(qtyInput.value || '1', 10) + 1);
+        });
+
+        qtyInput.addEventListener('input', function () {
+            setQty(parseInt(qtyInput.value || '1', 10));
+        });
+
+        qtyInput.addEventListener('blur', function () {
+            setQty(parseInt(qtyInput.value || '1', 10));
+        });
+
+        setQty(1);
+    })();
+</script>

@@ -1,0 +1,29 @@
+@model MultiShop.WebUI.Models.ViewModels.ProductDetailSliderViewModel
+@{
+    var slides = new[] { Model.Image1, Model.Image2, Model.Image3, Model.Image4 }
+        .Where(s => !string.IsNullOrWhiteSpace(s))
+        .Distinct()
+        .ToList();
+    if (slides.Count == 0) slides = new List<string> { "/images/placeholder-product.svg" };
+}
+<div class="col-lg-5 mb-30">
+    <div id="product-carousel" class="carousel slide" data-ride="carousel">
+        <div class="carousel-inner bg-light">
+            @for (var i = 0; i < slides.Count; i++)
+            {
+                <div class="carousel-item @(i == 0 ? "active" : null)">
+                    <img class="w-100 h-100" src="@slides[i]" alt="Ürün" style="object-fit:contain;max-height:400px;" onerror="this.onerror=null;this.src='/images/placeholder-product.svg';" />
+                </div>
+            }
+        </div>
+        @if (slides.Count > 1)
+        {
+            <a class="carousel-control-prev" href="#product-carousel" data-slide="prev" role="button">
+                <i class="fa fa-2x fa-angle-left text-dark"></i>
+            </a>
+            <a class="carousel-control-next" href="#product-carousel" data-slide="next" role="button">
+                <i class="fa fa-2x fa-angle-right text-dark"></i>
+            </a>
+        }
+    </div>
+</div>

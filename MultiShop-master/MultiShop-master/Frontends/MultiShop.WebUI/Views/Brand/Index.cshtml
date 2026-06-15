@@ -1,0 +1,42 @@
+@model List<ResultBrandDto>
+
+@{
+    ViewData["Title"] = "Markalar";
+    Layout = "~/Views/UILayout/_UILayout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="row px-xl-5">
+        <div class="col-12">
+            <h5 class="section-title position-relative text-uppercase mb-4">
+                <span class="bg-secondary pr-3">Markalarımız</span>
+            </h5>
+        </div>
+    </div>
+
+    <div class="row px-xl-5 pb-3">
+        @if (Model == null || Model.Count == 0)
+        {
+            <div class="col-12">
+                <div class="alert alert-light border">
+                    Henüz marka kaydı bulunmuyor.
+                </div>
+            </div>
+        }
+        else
+        {
+            foreach (var item in Model)
+            {
+                <div class="col-lg-2 col-md-3 col-sm-4 col-6 pb-3">
+                    <div class="bg-light border text-center h-100 d-flex flex-column justify-content-center p-3">
+                        <img src="@item.ImageUrl"
+                             alt="@item.BrandName"
+                             onerror="this.onerror=null;this.src='/images/placeholder-product.svg';"
+                             style="width:72px;height:72px;object-fit:contain;margin:0 auto 10px auto;" />
+                        <span class="small font-weight-bold">@item.BrandName</span>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>

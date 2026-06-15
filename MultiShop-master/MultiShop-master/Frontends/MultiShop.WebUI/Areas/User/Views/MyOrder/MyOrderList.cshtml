@@ -1,0 +1,92 @@
+﻿@model List<ResultOrderingByUserIdDto>
+@{
+    ViewData["Title"] = "MyOrderList";
+    Layout = "~/Views/UILayout/_UILayout.cshtml";
+    var count = 0;
+    TimeZoneInfo trTimeZone;
+    try
+    {
+        trTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Turkey Standard Time");
+    }
+    catch
+    {
+        trTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Europe/Istanbul");
+    }
+    DateTime ToTrTime(DateTime dt) => TimeZoneInfo.ConvertTimeFromUtc(DateTime.SpecifyKind(dt, DateTimeKind.Utc), trTimeZone);
+    var orderProductPreviews = ViewBag.OrderProductPreviews as Dictionary<int, List<MultiShop.WebUI.Areas.User.Models.UserOrderProductPreviewViewModel>>
+                               ?? new Dictionary<int, List<MultiShop.WebUI.Areas.User.Models.UserOrderProductPreviewViewModel>>();
+}
+
+<div class="container-fluid pb-5">
+    <div class="row px-xl-5">
+        <div class="col-12">
+            <div class="bg-light p-30">
+                <div class="d-flex flex-wrap mb-3" style="gap:8px;">
+                    <a href="/Default/Index/" class="btn btn-sm btn-outline-secondary">Ana Sayfa</a>
+                    <a href="/ProductList/Index/" class="btn btn-sm btn-outline-secondary">Ürünler</a>
+                    <a href="/User/Cargo/Index/" class="btn btn-sm btn-outline-primary">Kargom Nerede</a>
+                </div>
+                <h4 class="mb-3">Siparişlerim</h4>
+                <p class="text-muted mb-3">Geçmiş siparişleriniz burada listelenir.</p>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover mb-0">
+                        <thead class="thead-light">
+                            <tr>
+                                <th style="width:70px;">#</th>
+                                <th style="width:320px;">Ürünler</th>
+                                <th>Toplam Fiyat</th>
+                                <th>Sipariş Tarihi</th>
+                                <th style="width:170px;">Detay</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model == null || Model.Count == 0)
+                            {
+                                <tr>
+                                    <td colspan="5">Henüz sipariş bulunmuyor.</td>
+                                </tr>
+                            }
+                            else
+                            {
+                                @foreach (var item in Model.OrderByDescending(x => x.OrderDate))
+                                {
+                                    count++;
+                                    <tr>
+                                        <th>@count</th>
+                                        <td>
+                                            @{
+                                                orderProductPreviews.TryGetValue(item.OrderingId, out var previews);
+                                                previews ??= new List<MultiShop.WebUI.Areas.User.Models.UserOrderProductPreviewViewModel>();
+                                            }
+                                            @if (previews.Count == 0)
+                                            {
+                                                <small class="text-muted">Ürün bilgisi bulunamadı.</small>
+                                            }
+                                            else
+                                            {
+                                                foreach (var p in previews.Take(2))
+                                                {
+                                                    <div class="d-flex align-items-center mb-1">
+                                                        <img src="@p.ProductImageUrl" alt="@p.ProductName" style="width:28px;height:28px;object-fit:cover;border:1px solid #eee;margin-right:6px;" onerror="this.onerror=null;this.src='/images/placeholder-product.svg';" />
+                                                        <small>@p.ProductName <span class="text-muted">(x@p.Quantity)</span></small>
+                                                    </div>
+                                                }
+                                                @if (previews.Count > 2)
+                                                {
+                                                    <small class="text-muted">+@(previews.Count - 2) ürün daha</small>
+                                                }
+                                            }
+                                        </td>
+                                        <td>@string.Format("{0:N2} ₺", item.TotalPrice)</td>
+                                        <td>@ToTrTime(item.OrderDate).ToString("dd.MM.yyyy HH:mm")</td>
+                                        <td><span class="btn btn-sm btn-outline-primary disabled">Hazırlanıyor</span></td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

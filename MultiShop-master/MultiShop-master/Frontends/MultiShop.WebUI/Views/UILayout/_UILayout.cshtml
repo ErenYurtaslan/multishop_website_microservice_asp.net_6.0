@@ -1,0 +1,76 @@
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+@await Component.InvokeAsync("_HeadUILayoutComponentPartial")
+
+<body>
+
+    @await Component.InvokeAsync("_TopbarUILayoutComponentPartial")
+
+    @await Component.InvokeAsync("_NavbarUILayoutComponentPartial")
+
+    @await Component.InvokeAsync("_DirectoryAlertUILayoutComponentPartial")
+
+    @RenderBody()
+
+    @await Component.InvokeAsync("_FooterUILayoutComponentPartial")
+
+    @await Component.InvokeAsync("_ScriptUILayoutComponentPartial")
+
+    @{
+        var basketAdded = TempData["BasketAdded"] as string;
+        var basketError = TempData["BasketError"] as string;
+    }
+    @if (!string.IsNullOrEmpty(basketAdded) || !string.IsNullOrEmpty(basketError))
+    {
+        <div id="ms-toast" class="ms-toast @(string.IsNullOrEmpty(basketError) ? "ms-toast-success" : "ms-toast-error")" role="status" aria-live="polite">
+            @if (!string.IsNullOrEmpty(basketError))
+            {
+                <i class="fa fa-exclamation-circle mr-2"></i> <span>@basketError</span>
+            }
+            else
+            {
+                <i class="fa fa-check-circle mr-2"></i> <span><strong>@basketAdded</strong> sepete eklendi.</span>
+                <a href="@Url.Action("Index", "ShoppingCart")" class="ms-toast-link">Sepete Git</a>
+            }
+        </div>
+        <style>
+            .ms-toast {
+                position: fixed;
+                right: 24px;
+                bottom: 24px;
+                padding: 14px 18px;
+                background: #fff;
+                border-radius: 6px;
+                box-shadow: 0 6px 24px rgba(0,0,0,.18);
+                z-index: 99999;
+                font-size: 14px;
+                display: flex;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 8px;
+                animation: ms-toast-fade 12s forwards;
+                max-width: 420px;
+            }
+            .ms-toast-success { color: #1b5e20; border-left: 4px solid #2e7d32; }
+            .ms-toast-error   { color: #b71c1c; border-left: 4px solid #c62828; }
+            .ms-toast a.ms-toast-link { margin-left: 8px; color: #1976d2; font-weight: 600; text-decoration: underline; pointer-events: auto; z-index: 100000; position: relative; }
+            /* Son kare sadece saydamlar; tıklanabilirliği alma yok. */
+            @@keyframes ms-toast-fade {
+                0%   { opacity: 0; transform: translateY(12px); }
+                6%  { opacity: 1; transform: none; }
+                80%  { opacity: 1; }
+                100% { opacity: 0; transform: translateY(6px); visibility: hidden; }
+            }
+        </style>
+    }
+
+    @RenderSection("Scripts", required: false)
+
+ </body>
+</html>

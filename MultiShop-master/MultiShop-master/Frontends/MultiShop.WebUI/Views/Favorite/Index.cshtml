@@ -1,0 +1,82 @@
+@model List<MultiShop.DtoLayer.FavoriteDtos.ResultUserFavoriteDto>
+
+@{
+    ViewData["Title"] = "Favorilerim";
+    Layout = "~/Views/UILayout/_UILayout.cshtml";
+    var returnEnc = Uri.EscapeDataString(Context.Request.Path + Context.Request.QueryString);
+}
+
+<!-- Breadcrumb Start -->
+<div class="container-fluid">
+    <div class="row px-xl-5">
+        <div class="col-12">
+            <nav class="breadcrumb bg-light mb-30">
+                <a class="breadcrumb-item text-dark" href="/">Ana Sayfa</a>
+                <a class="breadcrumb-item text-dark" href="/User/Index">Hesabım</a>
+                <span class="breadcrumb-item active">Favorilerim</span>
+            </nav>
+        </div>
+    </div>
+</div>
+<!-- Breadcrumb End -->
+
+<!-- Favorites Start -->
+<div class="container-fluid pb-5">
+    <div class="row px-xl-5">
+        <div class="col-12">
+            <h3 class="mb-4">Favorilerim</h3>
+
+            @if (Model == null || !Model.Any())
+            {
+                <div class="alert alert-info">
+                    Henüz favorilerinize ürün eklemediniz.
+                    <a href="/ProductList/Index" class="alert-link">Ürünleri keşfet</a>
+                </div>
+            }
+            else
+            {
+                <div class="row">
+                    @foreach (var item in Model)
+                    {
+                        <div class="col-lg-3 col-md-4 col-sm-6 pb-1">
+                            <div class="product-item bg-light mb-4">
+                                <div class="product-img position-relative overflow-hidden">
+                                    <img class="img-fluid w-100" src="@(string.IsNullOrWhiteSpace(item.ProductImageUrl) ? "/images/placeholder-product.svg" : item.ProductImageUrl)" alt="@item.ProductName" onerror="this.onerror=null;this.src='/images/placeholder-product.svg';" />
+                                    <div class="product-action">
+                                        <a class="btn btn-outline-dark btn-square"
+                                           title="Sepete ekle"
+                                           href="/ShoppingCart/AddBasketItem/@item.ProductId?returnUrl=@returnEnc">
+                                            <i class="fa fa-shopping-cart"></i>
+                                        </a>
+                                        <a class="btn btn-outline-danger btn-square"
+                                           title="Favorilerden kaldır"
+                                           href="/Favorite/Remove/@item.UserFavoriteId">
+                                            <i class="fa fa-trash"></i>
+                                        </a>
+                                        <a class="btn btn-outline-dark btn-square"
+                                           title="Detay"
+                                           href="/ProductList/ProductDetail/@item.ProductId">
+                                            <i class="fa fa-search"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="text-center py-4">
+                                    <a class="h6 text-decoration-none text-truncate" href="/ProductList/ProductDetail/@item.ProductId">
+                                        @item.ProductName
+                                    </a>
+                                    <div class="d-flex align-items-center justify-content-center mt-2">
+                                        <h5>@item.ProductPrice.ToString("0.##") ₺</h5>
+                                    </div>
+                                    <div class="d-flex align-items-center justify-content-center mt-1">
+                                        <small class="text-muted">@item.CreatedDate.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<!-- Favorites End -->

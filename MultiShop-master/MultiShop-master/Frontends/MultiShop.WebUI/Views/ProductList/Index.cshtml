@@ -1,0 +1,69 @@
+﻿@using MultiShop.DtoLayer.CatalogDtos.ProductDtos
+@{
+    ViewData["Title"] = "Ürünler";
+    Layout = "~/Views/UILayout/_UILayout.cshtml";
+    var filter = (ProductFilterRequestDto)(ViewBag.Filter ?? new ProductFilterRequestDto());
+    var search = filter.Search ?? string.Empty;
+    var categoryId = filter.CategoryId ?? string.Empty;
+}
+
+<div class="container-fluid">
+    <div class="row px-xl-5">
+        <div class="col-lg-3 col-md-4">
+
+            <form id="productFilterForm" method="get" action="@Url.Action("Index", "ProductList")">
+                @if (!string.IsNullOrWhiteSpace(categoryId))
+                {
+                    <input type="hidden" name="id" value="@categoryId" />
+                }
+
+                <div class="bg-light p-4 mb-30">
+                    <div class="form-group mb-2">
+                        <label for="searchText" class="small text-uppercase">Ürün adında ara</label>
+                        <input type="text" class="form-control form-control-sm" id="searchText" name="search"
+                               value="@search" placeholder="Örn. kulaklık" />
+                    </div>
+                    <div class="d-flex">
+                        <button type="submit" class="btn btn-primary btn-sm flex-fill mr-1">Filtrele</button>
+                        <a href="@Url.Action("Index", "ProductList", new { id = categoryId })"
+                           class="btn btn-outline-secondary btn-sm flex-fill ml-1">Temizle</a>
+                    </div>
+                </div>
+            </form>
+
+            @await Component.InvokeAsync("_ProductListPriceFilterComponentPartial",
+                new { minPrice = filter.MinPrice, maxPrice = filter.MaxPrice, inStockOnly = filter.InStockOnly })
+
+            @await Component.InvokeAsync("_ProductListColorFilterComponentPartial",
+                new { selectedColor = filter.Color })
+
+            @await Component.InvokeAsync("_ProductListSizeFilterComponentPartial",
+                new { selectedSize = filter.Size })
+
+        </div>
+
+        <div class="col-lg-9 col-md-8">
+            <div class="row pb-3">
+
+                @await Component.InvokeAsync("_ProductListGetProductCountComponentPartial")
+
+                @await Component.InvokeAsync("_ProductListComponentPartial", new { id = ViewBag.i, filter = filter })
+
+                @await Component.InvokeAsync("_ProductListPaginationComponentPartial")
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            var form = document.getElementById('productFilterForm');
+            if (!form) return;
+            document.querySelectorAll('input[form="productFilterForm"][type="radio"], input[form="productFilterForm"][type="checkbox"]').forEach(function (el) {
+                el.addEventListener('change', function () { form.submit(); });
+            });
+        })();
+    </script>
+}
