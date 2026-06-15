@@ -9,7 +9,9 @@ Start-MultiShop-Launcher.bat
 *.ttf
 *.html
 *.png
+!docs/screenshots/**
 *.jpg
+!docs/screenshots/**
 *.map
 *.js
 MultiShop-master/MultiShop-master/Frontends/MultiShop.WebUI/wwwroot/lib/bootstrap/LICENSE

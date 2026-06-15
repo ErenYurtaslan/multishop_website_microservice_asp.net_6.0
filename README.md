@@ -133,6 +133,7 @@ Kaynak kod `MultiShop-master/MultiShop-master/` altında yer alır.
 ```
 multishop_microservice/
 ├── README.md                          ← Bu dosya
+├── docs/screenshots/                  ← README görselleri
 ├── Start-MultiShop-Launcher.bat       ← Tek tıkla başlatma (kök launcher)
 └── MultiShop-master/MultiShop-master/
     ├── MultiShop.sln
@@ -175,6 +176,24 @@ multishop_microservice/
 | **Admin paneli** | `Areas/Admin/` | Ürün, kategori, marka, slider, yorum, istatistik yönetimi |
 | **Kullanıcı paneli** | `Areas/User/` | Siparişlerim, kargo takibi, favoriler |
 
+**Müşteri arayüzü** — ürün listesinde renk, beden, fiyat ve stok filtreleri; sepete ekleme geri bildirimi:
+
+![Ürün listesi ve filtreleme](docs/screenshots/product-list.png)
+
+**Ürün detayı** — marka, stok, adet seçimi ve yorum puanı:
+
+![Ürün detay sayfası](docs/screenshots/product-detail.png)
+
+**Admin paneli** — gösterge panelinde katalog, sipariş, kullanıcı ve gelir metrikleri:
+
+![Admin istatistik paneli](docs/screenshots/admin-dashboard.png)
+
+**Kullanıcı paneli** — sipariş geçmişi ve kargo takibi (barkod, firma, durum adımları):
+
+![Siparişlerim](docs/screenshots/user-orders.png)
+
+![Kargo takibi](docs/screenshots/cargo-tracking.png)
+
 WebUI doğrudan mikroservis portlarına gitmez. Tüm backend çağrıları `HttpClient` + `DelegatingHandler` zinciriyle Ocelot Gateway üzerinden yapılır. Token yönetimi iki handler ile ayrılır:
 
 - **`ResourceOwnerPasswordTokenHandler`** — Kullanıcı oturum token'ı (sepet, sipariş, ödeme)
@@ -207,6 +226,10 @@ MultiShop.Order.Application     → CQRS handler'lar, IRepository<T>
 MultiShop.Order.Persistence     → EF Core DbContext, Repository implementasyonları
 MultiShop.Order.WebApi          → REST controller'lar
 ```
+
+Order Web API, adres ve sipariş detayı uç noktalarını Swagger üzerinden sunar:
+
+![Order servisi Swagger](docs/screenshots/order-api-swagger.png)
 
 **Cargo servisi** — Klasik katmanlı mimari:
 
@@ -278,6 +301,10 @@ Mikroservis API
 | Sipariş adresi | `/Order` | Gateway → Order | `Addresses` (SQL) |
 | Ödeme | `/Payment` | Gateway → Payment + Order + Cargo | `PaymentRecords`, stok düşümü, `CargoDetail` + `CargoOperation` |
 | Kargo takibi | `/User/Cargo` | Gateway → Cargo | Operasyon timeline |
+
+Sipariş adresi ekranında teslimat bilgileri, kargo firması seçimi ve sipariş özeti bir arada toplanır:
+
+![Sipariş adresi ve özet](docs/screenshots/order-address.png)
 
 ### Ödeme sonrası otomasyon
 
