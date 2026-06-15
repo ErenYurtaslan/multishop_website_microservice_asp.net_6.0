@@ -8,9 +8,12 @@ Start-MultiShop-Launcher.bat
 *.woff
 *.ttf
 *.html
+# README görselleri hariç tüm raster dosyalar ignore edilir
 *.png
+!docs/screenshots/
 !docs/screenshots/**
 *.jpg
+!docs/screenshots/
 !docs/screenshots/**
 *.map
 *.js
