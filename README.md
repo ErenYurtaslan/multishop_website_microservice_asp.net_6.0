@@ -4,6 +4,8 @@
 
 Her mikroservis kendi bounded context'inde çalışır ve ihtiyacına göre farklı veri depolama teknolojisi seçer: ilişkisel işlemler için SQL Server, katalog için MongoDB, mesajlaşma için PostgreSQL, anlık sepet için Redis.
 
+![MultiShop admin gösterge paneli](docs/screenshots/admin-dashboard.png)
+
 ---
 
 ## İçindekiler
@@ -184,9 +186,7 @@ multishop_microservice/
 
 ![Ürün detay sayfası](docs/screenshots/product-detail.png)
 
-**Admin paneli** — gösterge panelinde katalog, sipariş, kullanıcı ve gelir metrikleri:
-
-![Admin istatistik paneli](docs/screenshots/admin-dashboard.png)
+**Admin paneli** — gösterge panelinde katalog, sipariş, kullanıcı ve gelir metrikleri (önizleme görseline bakın).
 
 **Kullanıcı paneli** — sipariş geçmişi ve kargo takibi (barkod, firma, durum adımları):
 
