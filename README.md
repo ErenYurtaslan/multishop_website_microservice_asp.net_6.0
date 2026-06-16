@@ -1,5 +1,7 @@
 # MultiShop
 
+**Türkçe** · [English](README.en.md)
+
 **MultiShop**, ASP.NET Core 6 ile geliştirilmiş, domain odaklı mikroservis mimarisine sahip tam kapsamlı bir e-ticaret platformudur. Tek bir Razor MVC arayüzü üzerinden ürün keşfi, sepet yönetimi, sipariş, ödeme, kargo takibi ve yönetim paneli akışlarını; IdentityServer4 + Ocelot API Gateway üzerinden koordine eden bağımsız servisler sunar.
 
 Her mikroservis kendi bounded context'inde çalışır ve ihtiyacına göre farklı veri depolama teknolojisi seçer: ilişkisel işlemler için SQL Server, katalog için MongoDB, mesajlaşma için PostgreSQL, anlık sepet için Redis.
@@ -132,7 +134,8 @@ Kaynak kod `MultiShop-master/MultiShop-master/` altında yer alır.
 
 ```
 multishop_microservice/
-├── README.md                          ← Bu dosya
+├── README.md                          ← Türkçe (bu dosya)
+├── README.en.md                       ← English
 ├── docs/screenshots/                  ← README görselleri
 ├── Start-MultiShop-Launcher.bat       ← Tek tıkla başlatma (kök launcher)
 └── MultiShop-master/MultiShop-master/
